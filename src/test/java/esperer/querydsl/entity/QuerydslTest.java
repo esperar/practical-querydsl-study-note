@@ -19,8 +19,13 @@ class QuerydslTest {
     @PersistenceContext
     EntityManager em;
 
+    JPAQueryFactory queryFactory;
+
     @BeforeEach
     public void before() {
+
+        queryFactory = new JPAQueryFactory(em);
+
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
 
@@ -53,8 +58,6 @@ class QuerydslTest {
 
     @Test
     public void startQuerydsl() {
-        //member1을 찾아라.
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
         QMember m = new QMember("m");
 
