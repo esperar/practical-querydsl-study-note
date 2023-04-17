@@ -1,5 +1,6 @@
 package esperer.querydsl.entity;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.List;
 
 import static esperer.querydsl.entity.QMember.member;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -65,7 +68,7 @@ class QuerydslTest {
         Member findMember = queryFactory
                 .select(m)
                 .from(m)
-                .where(m.username.eq("member1"))//파라미터 바인딩 처리
+                .where(m.username.eq("member1"))
                 .fetchOne();
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
@@ -79,6 +82,60 @@ class QuerydslTest {
                         .and(member.age.eq(10)))
                 .fetchOne();
         assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void fetch(){
+        //List
+        List<Member> fetch = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        //단 건
+        Member findMember1 = queryFactory
+                .selectFrom(member)
+                .fetchOne();
+
+        //처음 한 건 조회
+        Member findMember2 = queryFactory
+                .selectFrom(member)
+                .fetchFirst();
+
+        //페이징에서 사용
+        QueryResults<Member> results = queryFactory
+                .selectFrom(member)
+                .fetchResults();
+
+        //count 쿼리로 변경
+        long count = queryFactory
+                .selectFrom(member)
+                .fetchCount();
+
+    }
+
+    @Test
+    public void sort() {
+        em.persist(new Member(null, 100));
+        em.persist(new Member("member5", 100));
+        em.persist(new Member("member6", 100));
+
+        // desc 내림차순
+        // asc 오름차순
+        // 단 2에서 회원 이름이 없으면 마지막에 출력(nulls last)
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(100))
+                .orderBy(member.age.desc(), member.username.asc().nullsLast())
+                .fetch();
+
+        Member member5 = result.get(0);
+        Member member6 = result.get(1);
+        Member memberNull = result.get(2);
+
+        assertThat(member5.getUsername()).isEqualTo("member5");
+        assertThat(member6.getUsername()).isEqualTo("member6");
+        assertThat(memberNull.getUsername()).isNull();
+
     }
 
 
