@@ -294,7 +294,7 @@ class QuerydslTest {
     }
 
     @Test
-    public void fetchJoin() throws Exception(){
+    public void fetchJoin() throws Exception{
         em.flush();
         em.clear();
 
