@@ -9,7 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
 import java.util.List;
 
@@ -267,5 +269,42 @@ class QuerydslTest {
         for (Tuple tuple : result) {
             System.out.println("tuple = " + tuple);
         }
+    }
+
+    /**
+     * 패치조인 : SQL 조인을 활용해 엔티티를 한번에 조회하는 기능으로 주로 성능 최적화에 사용
+     * 사용방법 join(), leftJoin()등 조인 기능 뒤에 .fetchJoin()을 붙여주면 된다.
+     */
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+    @Test
+    public void fetchJoinNo() throws Exception {
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .select(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean isLoaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+        assertThat(isLoaded).as("패치 조인 미적용").isFalse();
+    }
+
+    @Test
+    public void fetchJoin() throws Exception(){
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .select(member)
+                .join(member.team, team).fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean isLoaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+        assertThat(isLoaded).as("패치 조인 적용").isTrue();
     }
 }
