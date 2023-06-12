@@ -3,6 +3,7 @@ package esperer.querydsl.entity;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -413,6 +414,22 @@ class QuerydslTest {
 
             System.out.println("username = " + username + " age = " + age + " rank = " + rank);
         }
+    }
+
+    @Test
+    public void constant() throws Exception {
+        // 상수 사용
+        Tuple result = queryFactory
+                .select(member.username, Expressions.constant("A"))
+                .from(member)
+                .fetchFirst();
+
+        // 문자 더하기
+        String results = queryFactory
+                .select(member.username.concat("_").concat(member.age.stringValue()))
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
     }
 
 }
