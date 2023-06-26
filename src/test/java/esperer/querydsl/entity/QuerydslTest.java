@@ -2,6 +2,7 @@ package esperer.querydsl.entity;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -9,6 +10,7 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import esperer.querydsl.dto.MemberDto;
+import esperer.querydsl.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +27,7 @@ import static com.querydsl.jpa.JPAExpressions.*;
 import static esperer.querydsl.entity.QMember.member;
 import static esperer.querydsl.entity.QTeam.team;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.withinPercentage;
 
 
 @SpringBootTest
@@ -516,6 +519,28 @@ class QuerydslTest {
         }
     }
 
+    @Test
+    public void differentAlias(){
+        /**
+         * 프로퍼티나, 필드 접근 생성 방식에서 이름이 다를 때 해결 방안
+         * ExpressionUtils.as(source,alias) : 필드나, 서브 쿼리에 별칭 적용
+         * username.as("memberName") : 필드에 별칭 적용
+         */
+        QMember memberSub = new QMember("memberSub");
 
+        List<UserDto> result = queryFactory
+                .select(Projections.fields(UserDto.class,
+                                member.username.as("name"),
+                                ExpressionUtils.as(
+                                        select(memberSub.age.max())
+                                                .from(memberSub), "age")
+                        )
+                ).from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("userDto = " + userDto);
+        }
+    }
 
 }
