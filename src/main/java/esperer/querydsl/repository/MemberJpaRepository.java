@@ -2,7 +2,6 @@ package esperer.querydsl.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import esperer.querydsl.entity.Member;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
