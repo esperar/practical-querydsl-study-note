@@ -678,4 +678,5 @@ class QuerydslTest {
         }
     }
 
+
 }
