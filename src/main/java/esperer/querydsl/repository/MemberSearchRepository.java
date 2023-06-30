@@ -23,7 +23,6 @@ public class MemberSearchRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    @Override
     public List<MemberTeamDto> search(MemberSearchCondition condition) {
         return queryFactory
                 .select(new QMemberTeamDto(
