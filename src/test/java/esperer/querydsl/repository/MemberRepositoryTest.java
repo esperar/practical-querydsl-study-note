@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static esperer.querydsl.entity.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -34,6 +35,14 @@ class MemberRepositoryTest {
 
         List<Member> result2 = memberRepository.findByUsername("member1");
         assertThat(result2).containsExactly(member);
+    }
+
+    @Test
+    public void querydslPredicateExecutor(){
+        Iterable<Member> result = memberRepository.findAll(
+                member.age.between(10, 40)
+                        .and(member.username.eq("member1"))
+        );
     }
 
 }
