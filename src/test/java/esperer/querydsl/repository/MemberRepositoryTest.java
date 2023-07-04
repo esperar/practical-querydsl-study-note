@@ -3,7 +3,6 @@ package esperer.querydsl.repository;
 import esperer.querydsl.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -12,7 +11,6 @@ import java.util.List;
 import static esperer.querydsl.entity.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 @Transactional
 class MemberRepositoryTest {
 
